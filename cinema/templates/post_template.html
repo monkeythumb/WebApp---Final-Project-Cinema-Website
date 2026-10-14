@@ -1,0 +1,8 @@
+<div class="post">
+    <div class="text">{{ post.text }}</div>
+    <div class="metadata">
+        <a href="{{ url_for('main.profile') }}" class="author">@{{ post.user.name }}</a>
+        <a href="{{ url_for('main.post') }}" class="date">{{ post.timestamp }}</a>
+    </div>
+    <button type="button" class="reply-button">Reply</button>
+</div>

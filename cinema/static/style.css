@@ -1,0 +1,40 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0 auto;
+    max-width: 600px;
+    padding: 20px;
+}
+
+.site-header,
+.post {
+    border-bottom: 1px solid lightgray;
+    padding: 10px 0;
+}
+
+.site-footer,
+.username,
+.reply-to,
+.date {
+    color: gray;
+}
+
+.profile-picture {
+    /* equal width and height plus 50% radius makes a circle */
+    width: 100px;
+    height: 100px;
+    border: 2px solid black;
+    border-radius: 50%;
+}
+
+.new-post textarea {
+    display: block;
+    width: 100%;
+}
+
+.author {
+    font-weight: bold;
+}
+
+button:hover {
+    background: lightgray;
+}
