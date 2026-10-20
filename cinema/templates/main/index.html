@@ -9,8 +9,8 @@
 
     <section class="new-post">
         <h2>Create a new post</h2>
-        <form>
-            <textarea name="text" rows="3" placeholder="What's happening?"></textarea>
+        <form action="{{url_for('main.new_post')}}" method="post">
+            <textarea name="text" rows="3" placeholder="What's on your mind?"></textarea>
             <button type="submit">Post</button>
         </form>
     </section>

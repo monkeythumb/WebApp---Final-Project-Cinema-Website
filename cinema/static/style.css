@@ -38,3 +38,9 @@ body {
 button:hover {
     background: lightgray;
 }
+.notification {
+    background: lightyellow;
+    border: 1px solid gold;
+    padding: 8px;
+    margin: 10px 0;
+}
