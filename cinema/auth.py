@@ -32,7 +32,7 @@ def signup_post():
     new_user = model.User(
         email=email,
         name=username,
-        profile=model.UserProfile(),
+        role=model.UserRole.customer,
         password=password_hash,
     )
     db.session.add(new_user)
