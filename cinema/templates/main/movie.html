@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ movie.title }} · Best Movie Theater Ever{% endblock %}
+
+{% block content %}
+    <section class="movie-detail">
+        <h2>{{ movie.title }} <span class="rating">{{ movie.age_rating }}</span></h2>
+        <p class="movie-meta">{{ movie.genre }} · {{ movie.duration_minutes }} min · {{ movie.release_year }}</p>
+        <p>{{ movie.synopsis }}</p>
+        <dl>
+            <dt>Director</dt><dd>{{ movie.director }}</dd>
+            <dt>Cast</dt><dd>{{ movie.actors }}</dd>
+        </dl>
+    </section>
+
+    <section class="showtime-list">
+        <h3>Showtimes</h3>
+        <table>
+            <thead>
+                <tr><th>Date</th><th>Time</th><th>Screen</th><th>Format</th><th></th></tr>
+            </thead>
+            <tbody>
+                {% for showtime in movie.showtimes %}
+                    <tr>
+                        <td>{{ showtime.starts_at.strftime('%a %d/%m') }}</td>
+                        <td>{{ showtime.starts_at.strftime('%H:%M') }}</td>
+                        <td>{{ showtime.screen.name }}</td>
+                        <td>{% if showtime.is_3d %}3D{% else %}2D{% endif %}</td>
+                        <td><button type="button">Book</button></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+{% endblock %}

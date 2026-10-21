@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}My bookings · Best Movie Theater Ever{% endblock %}
+
+{% macro booking_card(booking) %}
+    <article class="booking">
+        <h4>{{ booking.showtime.movie.title }}</h4>
+        <p>
+            {{ booking.showtime.starts_at.strftime('%a %d/%m/%Y %H:%M') }} ·
+            {{ booking.showtime.screen.name }}
+        </p>
+        <p>
+            {{ booking.seats }} seats × {{ '%.2f'|format(booking.ticket_price) }} €
+            {% if booking.free_tickets %}({{ booking.free_tickets }} free){% endif %}
+        </p>
+        {% if booking.foods %}
+            <ul>
+                {% for line in booking.foods %}
+                    <li>{{ line.quantity }} × {{ line.food_item.name }} ({{ '%.2f'|format(line.unit_price) }} €)</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        <p class="total">Total: {{ '%.2f'|format(booking.total_price) }} €</p>
+    </article>
+{% endmacro %}
+
+{% block content %}
+    <h2>My bookings</h2>
+
+    <section class="upcoming">
+        <h3>Upcoming</h3>
+        {% for booking in upcoming %}
+            {{ booking_card(booking) }}
+        {% else %}
+            <p>You have no upcoming bookings.</p>
+        {% endfor %}
+    </section>
+
+    <section class="past">
+        <h3>Past</h3>
+        {% for booking in past %}
+            {{ booking_card(booking) }}
+        {% else %}
+            <p>No past bookings.</p>
+        {% endfor %}
+    </section>
+{% endblock %}

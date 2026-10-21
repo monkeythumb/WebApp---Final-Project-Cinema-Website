@@ -1,46 +1,118 @@
 body {
     font-family: Arial, sans-serif;
     margin: 0 auto;
-    max-width: 600px;
+    max-width: 800px;
     padding: 20px;
+    color: #222;
 }
 
-.site-header,
-.post {
-    border-bottom: 1px solid lightgray;
+a {
+    color: #b03a2e;
+}
+
+.site-header {
+    border-bottom: 2px solid #b03a2e;
     padding: 10px 0;
 }
 
-.site-footer,
-.username,
-.reply-to,
-.date {
+.site-header h1 {
+    display: inline;
+    margin-right: 20px;
+}
+
+.site-header h1 a {
+    text-decoration: none;
+}
+
+.site-header nav a,
+.current-user {
+    margin-right: 12px;
+}
+
+.current-user {
     color: gray;
 }
 
-.profile-picture {
-    /* equal width and height plus 50% radius makes a circle */
-    width: 100px;
-    height: 100px;
-    border: 2px solid black;
-    border-radius: 50%;
+.site-footer {
+    border-top: 1px solid lightgray;
+    color: gray;
+    margin-top: 30px;
+    padding-top: 10px;
 }
 
-.new-post textarea {
-    display: block;
-    width: 100%;
-}
-
-.author {
-    font-weight: bold;
-}
-
-button:hover {
-    background: lightgray;
-}
 .notification {
     background: lightyellow;
     border: 1px solid gold;
     padding: 8px;
     margin: 10px 0;
+}
+
+.movie,
+.booking {
+    border: 1px solid lightgray;
+    border-radius: 6px;
+    margin-bottom: 16px;
+    padding: 12px 16px;
+}
+
+.movie h3,
+.booking h4 {
+    margin-top: 0;
+}
+
+.movie-meta {
+    color: gray;
+}
+
+.rating {
+    border: 1px solid gray;
+    border-radius: 4px;
+    font-size: 0.8em;
+    padding: 1px 5px;
+}
+
+.showtime {
+    border: 1px solid #b03a2e;
+    border-radius: 4px;
+    display: inline-block;
+    margin: 4px 6px 0 0;
+    padding: 4px 8px;
+    text-decoration: none;
+}
+
+.showtime:hover {
+    background: #b03a2e;
+    color: white;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+th,
+td {
+    border-bottom: 1px solid lightgray;
+    padding: 6px 12px;
+    text-align: left;
+}
+
+.upcoming .booking {
+    border: 2px solid #b03a2e;
+}
+
+.past .booking {
+    color: gray;
+}
+
+.total {
+    font-weight: bold;
+}
+
+.staff-form div {
+    margin-bottom: 10px;
+}
+
+.staff-form textarea {
+    display: block;
+    width: 100%;
 }

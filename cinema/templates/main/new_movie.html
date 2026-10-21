@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Add movie · Best Movie Theater Ever{% endblock %}
+
+{% block content %}
+    <h2>Add a new movie</h2>
+    <form class="staff-form" action="{{ url_for('main.new_movie_post') }}" method="post" enctype="multipart/form-data">
+        <div><label>Title: <input type="text" name="title" maxlength="64" required></label></div>
+        <div><label>Synopsis: <textarea name="synopsis" rows="4" required></textarea></label></div>
+        <div><label>Duration (minutes): <input type="number" name="duration_minutes" min="1" required></label></div>
+        <div>
+            <label>Age rating:
+                <select name="age_rating">
+                    <option value="TP">TP (all audiences)</option>
+                    <option value="+7">+7</option>
+                    <option value="+12">+12</option>
+                    <option value="+16">+16</option>
+                    <option value="+18">+18</option>
+                </select>
+            </label>
+        </div>
+        <div><label>Genre: <input type="text" name="genre" maxlength="64" required></label></div>
+        <div><label>Director: <input type="text" name="director" maxlength="64" required></label></div>
+        <div><label>Actors: <textarea name="actors" rows="2"></textarea></label></div>
+        <div><label>Release year: <input type="number" name="release_year" min="1888" max="2100" required></label></div>
+        <div><label>Poster: <input type="file" name="poster" accept="image/*"></label></div>
+        <div><input type="submit" value="Add movie"></div>
+    </form>
+{% endblock %}
