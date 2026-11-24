@@ -1,6 +1,7 @@
 import os
 
 from flask import Flask
+import flask_wtf
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
@@ -20,6 +21,7 @@ def create_app(test_config=None):
     app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 
     app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("SQLALCHEMY_DATABASE_URI")
+    flask_wtf.CSRFProtect(app)
     db.init_app(app)
 
     login_manager = LoginManager()
@@ -35,7 +37,11 @@ def create_app(test_config=None):
     # (we import main from here to avoid circular imports in the next lab)
     from . import main
     from . import auth
+    from . import food
+    from . import showtimes
 
     app.register_blueprint(main.bp)
     app.register_blueprint(auth.bp)
+    app.register_blueprint(food.bp)
+    app.register_blueprint(showtimes.bp)
     return app

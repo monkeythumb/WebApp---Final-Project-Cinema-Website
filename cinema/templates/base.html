@@ -14,6 +14,8 @@
                     <a href="{{ url_for('main.bookings') }}">My bookings</a>
                     {% if current_user.role == current_user.role.__class__.management_staff %}
                         <a href="{{ url_for('main.new_movie') }}">Add movie</a>
+                        <a href="{{ url_for('showtimes.showtime_list') }}">Showtimes</a>
+                        <a href="{{ url_for('food.food_list') }}">Food</a>
                     {% endif %}
                     <span class="current-user">{{ current_user.name }}</span>
                     <a href="{{ url_for('auth.logout') }}">Log out</a>
