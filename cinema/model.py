@@ -131,3 +131,4 @@ class BookingPackage(db.Model):
     package: Mapped["Package"] = relationship()
     quantity: Mapped[int]
     unit_price: Mapped[Decimal] = mapped_column(Numeric(6, 2))
+
