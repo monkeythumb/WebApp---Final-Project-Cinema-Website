@@ -5,13 +5,10 @@ from flask import Blueprint, render_template, redirect, url_for, flash, abort
 import flask_login
 
 from . import model
+from .permissions import is_staff, require_staff
 
 
 bp = Blueprint("main", __name__)
-
-
-def is_staff(user):
-    return user.role == model.UserRole.management_staff
 
 
 # Example data for the first checkpoint: these objects are NOT stored in the
@@ -104,15 +101,13 @@ def bookings():
 @bp.route("/staff/movies/new")
 @flask_login.login_required
 def new_movie():
-    if not is_staff(flask_login.current_user):
-        abort(403, "Only management staff can add movies.")
+    require_staff()
     return render_template("main/new_movie.html")
 
 
 @bp.route("/staff/movies/new", methods=["POST"])
 @flask_login.login_required
 def new_movie_post():
-    if not is_staff(flask_login.current_user):
-        abort(403, "Only management staff can add movies.")
+    require_staff()
     flash("Saving movies is not implemented yet.")
     return redirect(url_for("main.new_movie"))
