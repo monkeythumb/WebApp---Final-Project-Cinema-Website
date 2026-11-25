@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Showtimes · Best Movie Theater Ever{% endblock %}
+
+{% block content %}
+    <h2>Showtimes</h2>
+    <p><a href="{{ url_for('showtimes.new_showtime') }}">+ Add showtime</a></p>
+
+    {% if showtimes %}
+        <table>
+            <thead>
+                <tr><th>Date</th><th>Time</th><th>Movie</th><th>Screen</th><th>Format</th><th>Bookings</th><th></th></tr>
+            </thead>
+            <tbody>
+                {% for showtime in showtimes %}
+                    <tr {% if naive(showtime.starts_at) < now %}class="past-row"{% endif %}>
+                        <td>{{ showtime.starts_at.strftime('%a %d/%m/%Y') }}</td>
+                        <td>{{ showtime.starts_at.strftime('%H:%M') }}</td>
+                        <td>{{ showtime.movie.title }}</td>
+                        <td>{{ showtime.screen.name }}</td>
+                        <td>{% if showtime.is_3d %}3D{% else %}2D{% endif %}</td>
+                        <td>{{ showtime.bookings|length }}</td>
+                        <td>
+                            {% if showtime.bookings %}
+                                <small>Locked (has bookings)</small>
+                            {% else %}
+                                <a href="{{ url_for('showtimes.edit_showtime', showtime_id=showtime.id) }}">Edit</a>
+                                <form class="inline" method="post"
+                                      action="{{ url_for('showtimes.delete_showtime', showtime_id=showtime.id) }}"
+                                      onsubmit="return confirm('Delete this showtime?');">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit">Delete</button>
+                                </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>There are no showtimes yet.</p>
+    {% endif %}
+{% endblock %}

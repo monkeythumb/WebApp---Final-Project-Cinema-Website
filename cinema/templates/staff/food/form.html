@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ heading }} · Best Movie Theater Ever{% endblock %}
+
+{% block content %}
+    <h2>{{ heading }}</h2>
+    <form class="staff-form" action="{{ action }}" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div><label>Name: <input type="text" name="name" maxlength="64" value="{{ form.get('name', '') }}" required></label></div>
+        <div><label>Description: <textarea name="description" rows="3" required>{{ form.get('description', '') }}</textarea></label></div>
+        <div><label>Price (€): <input type="text" inputmode="decimal" name="price" value="{{ form.get('price', '') }}" required></label></div>
+        <div>
+            <label>Category:
+                <select name="category" required>
+                    {% for category in categories %}
+                        <option value="{{ category.name }}" {% if form.get('category') == category.name %}selected{% endif %}>{{ category.name|capitalize }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+        </div>
+        <div><label><input type="checkbox" name="free_refill" {% if form.get('free_refill') %}checked{% endif %}> Free refill</label></div>
+        <div>
+            <input type="submit" value="Save">
+            <a href="{{ url_for('food.food_list') }}">Cancel</a>
+        </div>
+    </form>
+{% endblock %}

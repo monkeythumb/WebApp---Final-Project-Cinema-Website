@@ -116,3 +116,11 @@ td {
     display: block;
     width: 100%;
 }
+
+form.inline {
+    display: inline;
+}
+
+.past-row {
+    color: gray;
+}

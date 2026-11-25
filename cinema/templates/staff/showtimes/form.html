@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ heading }} · Best Movie Theater Ever{% endblock %}
+
+{% block content %}
+    <h2>{{ heading }}</h2>
+
+    {% if not movies or not screens %}
+        <p>
+            You need at least one movie and one screen before you can schedule a showtime.
+            {% if not movies %}<a href="{{ url_for('main.new_movie') }}">Add a movie</a>.{% endif %}
+        </p>
+    {% else %}
+        <form class="staff-form" action="{{ action }}" method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div>
+                <label>Movie:
+                    <select name="movie_id" required>
+                        {% for movie in movies %}
+                            <option value="{{ movie.id }}" {% if form.get('movie_id')|string == movie.id|string %}selected{% endif %}>{{ movie.title }} ({{ movie.duration_minutes }} min)</option>
+                        {% endfor %}
+                    </select>
+                </label>
+            </div>
+            <div>
+                <label>Screen:
+                    <select name="screen_id" required>
+                        {% for screen in screens %}
+                            <option value="{{ screen.id }}" {% if form.get('screen_id')|string == screen.id|string %}selected{% endif %}>{{ screen.name }} ({{ screen.capacity }} seats)</option>
+                        {% endfor %}
+                    </select>
+                </label>
+            </div>
+            <div><label>Starts at: <input type="datetime-local" name="starts_at" value="{{ form.get('starts_at', '') }}" required></label></div>
+            <div><label><input type="checkbox" name="is_3d" {% if form.get('is_3d') %}checked{% endif %}> 3D</label></div>
+            <div>
+                <input type="submit" value="Save">
+                <a href="{{ url_for('showtimes.showtime_list') }}">Cancel</a>
+            </div>
+        </form>
+    {% endif %}
+{% endblock %}
