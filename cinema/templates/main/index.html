@@ -6,6 +6,9 @@
         {% for movie in movies %}
             <article class="movie">
                 <h3><a href="{{ url_for('main.movie', movie_id=movie.id) }}">{{ movie.title }}</a></h3>
+                {% if movie.poster_data %}
+                    <img class="poster" src="{{ url_for('main.movie_poster', movie_id=movie.id) }}" alt="Poster of {{ movie.title }}">
+                {% endif %}
                 <p class="movie-meta">
                     {{ movie.genre }} · {{ movie.duration_minutes }} min ·
                     <span class="rating">{{ movie.age_rating }}</span>

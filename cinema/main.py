@@ -1,50 +1,12 @@
 import datetime
-from decimal import Decimal
 
-from flask import Blueprint, render_template, redirect, url_for, flash, abort, request
+from flask import Blueprint, render_template, redirect, url_for, flash, abort, request, Response
 import flask_login
 
 from . import db, model
 from .permissions import is_staff, require_staff
 
-
 bp = Blueprint("main", __name__)
-
-
-# Example data for the first checkpoint: these objects are NOT stored in the
-# database. The controllers will query the database in the next iterations.
-def example_data():
-    today = datetime.datetime.now().replace(minute=0, second=0, microsecond=0)
-    sala1 = model.Screen(id=1, name="Sala 1", capacity=120)
-    sala2 = model.Screen(id=2, name="Sala 2", capacity=80)
-    dune = model.Movie(
-        id=1,
-        title="Dune: Part Two",
-        synopsis="Paul Atreides unites with the Fremen to take revenge on those who destroyed his family.",
-        duration_minutes=166,
-        age_rating="+12",
-        genre="Science fiction",
-        director="Denis Villeneuve",
-        actors="Timothée Chalamet, Zendaya, Rebecca Ferguson",
-        release_year=2024,
-    )
-    spirited = model.Movie(
-        id=2,
-        title="Spirited Away",
-        synopsis="A girl wanders into a world of spirits and must work to free herself and her parents.",
-        duration_minutes=125,
-        age_rating="TP",
-        genre="Animation",
-        director="Hayao Miyazaki",
-        actors="Rumi Hiiragi, Miyu Irino",
-        release_year=2001,
-    )
-    model.Showtime(id=1, movie=dune, screen=sala1, starts_at=today.replace(hour=18), is_3d=False)
-    model.Showtime(id=2, movie=dune, screen=sala1, starts_at=today.replace(hour=21, minute=30), is_3d=True)
-    model.Showtime(id=3, movie=dune, screen=sala2, starts_at=(today + datetime.timedelta(days=1)).replace(hour=19), is_3d=False)
-    model.Showtime(id=4, movie=spirited, screen=sala2, starts_at=today.replace(hour=17), is_3d=False)
-    model.Showtime(id=5, movie=spirited, screen=sala2, starts_at=(today + datetime.timedelta(days=1)).replace(hour=16), is_3d=False)
-    return [dune, spirited]
 
 # controller
 @bp.route("/")                                                            # connects the url to this function GET only
@@ -59,7 +21,16 @@ def index():                                                              # the 
 @flask_login.login_required                                               # only logged in users
 def movie(movie_id):                                                      # function with parameter of the movie id
     movie = db.get_or_404(model.Movie, movie_id)                          # store in "movie" the Movie with that id or 404 error
-    return render_template("main/movie.html", movie=movie)     # send back the page, giving it "movie"
+    return render_template("main/movie.html", movie=movie)                # send back the page, giving it "movie"
+
+@bp.route("/movie/<int:movie_id>/poster")
+@flask_login.login_required
+def movie_poster(movie_id):
+    movie = db.get_or_404(model.Movie, movie_id)
+    if movie.poster_data is None:
+        abort(404)
+    return Response(movie.poster_data, mimetype=movie.poster_mime_type)   # builds an HTTP response whose body is the raw image bytes, with ContentType
+                                                                          # header taken from the saved MIME type, so browser knows its an image
 
 
 @bp.route("/bookings")
@@ -99,13 +70,13 @@ def new_movie_post():
         return redirect(url_for("main.new_movie"))
 
     poster_data = None
-    poster_mime_type = None
-    poster = request.files.get("poster")
-    if poster and poster.filename:
-        if not poster.mimetype.startswith("image/"):
-            flash("The poster must be an image file.")
+    poster_mime_type = None  # LargeBinary
+    poster = request.files.get("poster")                    # gets uploaded file from the form. text->request.form, files->requests.files
+    if poster and poster.filename:                          # no poster if poster.filename is empty
+        if not poster.mimetype.startswith("image/"):        # mimetype=file's type as browser reports it
+            flash("The poster must be an image file.")      
             return redirect(url_for("main.new_movie"))
-        poster_data = poster.read()
+        poster_data = poster.read()                         # reads file's contents as bytes which gets saved in poster_data
         if len(poster_data) > model.Movie.MAX_POSTER_SIZE:
             flash("The poster is too big (maximum 1 MB)")
             return redirect(url_for("main.new_movie"))

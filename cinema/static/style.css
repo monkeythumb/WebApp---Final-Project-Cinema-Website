@@ -124,3 +124,10 @@ form.inline {
 .past-row {
     color: gray;
 }
+
+.poster {
+    max-width:180px;
+    height:auto;
+    display:block;
+    margin: 0.5em 0;
+}
