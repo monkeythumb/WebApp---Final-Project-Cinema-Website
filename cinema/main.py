@@ -1,10 +1,10 @@
 import datetime
 from decimal import Decimal
 
-from flask import Blueprint, render_template, redirect, url_for, flash, abort
+from flask import Blueprint, render_template, redirect, url_for, flash, abort, request
 import flask_login
 
-from . import model
+from . import db, model
 from .permissions import is_staff, require_staff
 
 
@@ -46,56 +46,36 @@ def example_data():
     model.Showtime(id=5, movie=spirited, screen=sala2, starts_at=(today + datetime.timedelta(days=1)).replace(hour=16), is_3d=False)
     return [dune, spirited]
 
+# controller
+@bp.route("/")                                                            # connects the url to this function GET only
+@flask_login.login_required                                               # if not logged in, send them to the login page instead of running the function
+def index():                                                              # the controller with no paramaters bc the URL has no variable part
+    query = db.select(model.Movie).order_by(model.Movie.title)            # select rows from the movie table :: in alphabetical order by title 
+    movies = db.session.execute(query).scalars().all()                    # turns the result into a list of Movie objects
+    return render_template("main/index.html", movies=movies)              # fills in the template, which receives a variable called 'movies' and returns the HTML page 
 
-@bp.route("/")
-@flask_login.login_required
-def index():
-    movies = example_data()
-    return render_template("main/index.html", movies=movies)
 
-
-@bp.route("/movie/<int:movie_id>")
-@flask_login.login_required
-def movie(movie_id):
-    movies = {m.id: m for m in example_data()}
-    if movie_id not in movies:
-        abort(404, "Movie id {} doesn't exist.".format(movie_id))
-    return render_template("main/movie.html", movie=movies[movie_id])
+@bp.route("/movie/<int:movie_id>")                                        # function handles /movie/< # >
+@flask_login.login_required                                               # only logged in users
+def movie(movie_id):                                                      # function with parameter of the movie id
+    movie = db.get_or_404(model.Movie, movie_id)                          # store in "movie" the Movie with that id or 404 error
+    return render_template("main/movie.html", movie=movie)     # send back the page, giving it "movie"
 
 
 @bp.route("/bookings")
 @flask_login.login_required
 def bookings():
-    dune, spirited = example_data()
-    upcoming = model.Booking(
-        id=1,
-        showtime=dune.showtimes[1],
-        seats=4,
-        ticket_price=Decimal("20.00"),
-        free_tickets=1,
-        total_price=Decimal("64.00"),
-        created_at=datetime.datetime.now(),
+    query = (
+        db.select(model.Booking)
+        .join(model.Booking.showtime)
+        .where(model.Booking.user == flask_login.current_user)
+        .order_by(model.Showtime.starts_at)
     )
-    model.BookingFood(
-        booking=upcoming,
-        food_item=model.FoodItem(name="Large popcorn", price=Decimal("4.00")),
-        quantity=1,
-        unit_price=Decimal("4.00"),
-    )
-    past = model.Booking(
-        id=2,
-        showtime=model.Showtime(
-            movie=spirited,
-            screen=spirited.showtimes[0].screen,
-            starts_at=datetime.datetime.now() - datetime.timedelta(days=7),
-        ),
-        seats=2,
-        ticket_price=Decimal("5.00"),
-        free_tickets=0,
-        total_price=Decimal("10.00"),
-        created_at=datetime.datetime.now() - datetime.timedelta(days=9),
-    )
-    return render_template("main/bookings.html", upcoming=[upcoming], past=[past])
+    my_bookings = db.session.execute(query).scalars().all()
+    now = datetime.datetime.now()
+    upcoming = [b for b in my_bookings if b.showtime.starts_at >= now]
+    past = [b for b in my_bookings if b.showtime.starts_at < now]
+    return render_template("main/bookings.html", upcoming=upcoming, past=past)
 
 
 @bp.route("/staff/movies/new")
