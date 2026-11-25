@@ -84,10 +84,47 @@ def new_movie():
     require_staff()
     return render_template("main/new_movie.html")
 
-
+# AI API Poster help
 @bp.route("/staff/movies/new", methods=["POST"])
 @flask_login.login_required
 def new_movie_post():
     require_staff()
-    flash("Saving movies is not implemented yet.")
-    return redirect(url_for("main.new_movie"))
+
+    # numbers come from the form as txt so convertthem and reject bad input
+    try:
+        duration = int(request.form.get("duration_minutes"))
+        year = int(request.form.get("release_year"))
+    except (TypeError, ValueError):
+        flash("Duration and release year must be whole numbers") 
+        return redirect(url_for("main.new_movie"))
+
+    poster_data = None
+    poster_mime_type = None
+    poster = request.files.get("poster")
+    if poster and poster.filename:
+        if not poster.mimetype.startswith("image/"):
+            flash("The poster must be an image file.")
+            return redirect(url_for("main.new_movie"))
+        poster_data = poster.read()
+        if len(poster_data) > model.Movie.MAX_POSTER_SIZE:
+            flash("The poster is too big (maximum 1 MB)")
+            return redirect(url_for("main.new_movie"))
+        poster_mime_type = poster.mimetype
+
+    movie = model.Movie(
+        title=request.form.get("title"),
+        synopsis=request.form.get("synopsis"),
+        duration_minutes=duration,
+        age_rating=request.form.get("age_rating"),
+        genre=request.form.get("genre"),
+        director=request.form.get("director"),
+        actors=request.form.get("actors", ""),
+        release_year=year,
+        poster_data=poster_data,
+        poster_mime_type=poster_mime_type,
+    )
+
+    db.session.add(movie)
+    db.session.commit()
+    flash("Movie added!")
+    return redirect(url_for("main.movie", movie_id=movie.id))
