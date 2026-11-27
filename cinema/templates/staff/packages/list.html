@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Packages · Best Movie Theater Ever{% endblock %}
+
+{% block content %}
+    <h2>Packages</h2>
+    <p><a href="{{ url_for('packages.new_package') }}">Add a package</a></p>
+    {% for package in packages %}
+        <article class="booking">
+            <h3>{{ package.name }} · {{ '%.2f'|format(package.price) }} €</h3>
+            <p>{{ package.description }}</p>
+            <ul>
+                {% if package.ticket_included %}
+                    <li>{{ package.ticket_included }} × movie ticket</li>
+                {% endif %}
+                {% for line in package.items %}
+                    <li>{{ line.quantity }} × {{ line.food_item.name }}</li>
+                {% endfor %}
+            </ul>
+            <a href="{{ url_for('packages.edit_package', package_id=package.id) }}">Edit</a>
+            <form action="{{ url_for('packages.delete_package', package_id=package.id) }}" method="post" style="display: inline">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="submit" value="Delete">
+            </form>
+        </article>
+    {% else %}
+        <p>No packages yet.</p>
+    {% endfor %}
+{% endblock %}

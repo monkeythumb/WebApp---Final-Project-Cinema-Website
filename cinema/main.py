@@ -17,6 +17,8 @@ def index():                                                              # the 
     return render_template("main/index.html", movies=movies)              # fills in the template, which receives a variable called 'movies' and returns the HTML page 
 
 
+# show upcoming movies, loading showtimes filter by showtimes 
+
 @bp.route("/movie/<int:movie_id>")                                        # function handles /movie/< # >
 @flask_login.login_required                                               # only logged in users
 def movie(movie_id):                                                      # function with parameter of the movie id

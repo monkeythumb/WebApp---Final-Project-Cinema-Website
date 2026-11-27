@@ -39,9 +39,11 @@ def create_app(test_config=None):
     from . import auth
     from . import food
     from . import showtimes
+    from . import packages
 
     app.register_blueprint(main.bp)
     app.register_blueprint(auth.bp)
     app.register_blueprint(food.bp)
     app.register_blueprint(showtimes.bp)
+    app.register_blueprint(packages.bp)
     return app

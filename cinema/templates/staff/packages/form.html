@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Package · Best Movie Theater Ever{% endblock %}
+
+{% block content %}
+    {% if package %}
+        <h2>Edit package</h2>
+        {% set action = url_for('packages.edit_package_post', package_id=package.id) %}
+    {% else %}
+        <h2>Add a package</h2>
+        {% set action = url_for('packages.new_package_post') %}
+    {% endif %}
+    <form class="staff-form" action="{{ action }}" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div><label>Name: <input type="text" name="name" maxlength="64" value="{{ package.name if package else '' }}" required></label></div>
+        <div><label>Description: <textarea name="description" rows="3" required>{{ package.description if package else '' }}</textarea></label></div>
+        <div><label>Price (€): <input type="number" name="price" step="0.01" min="0" value="{{ package.price if package else '' }}" required></label></div>
+        <div><label>Tickets included: <input type="number" name="ticket_included" min="0" value="{{ package.ticket_included if package else 1 }}" required></label></div>
+        <h3>Food items included</h3>
+        {% for item in food_items %}
+            <div><label>{{ item.name }}: <input type="number" name="qty_{{ item.id }}" min="0" value="{{ quantities.get(item.id, 0) }}"></label></div>
+        {% else %}
+            <p>There are no food items yet. Add some on the Food page first.</p>
+        {% endfor %}
+        <div><input type="submit" value="Save package"></div>
+    </form>
+{% endblock %}
